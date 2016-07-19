@@ -5,6 +5,8 @@
  */
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -178,5 +180,17 @@ public class DBUnitHelperTest {
 
     }
     
-
+    private static final String DATABASE_SERVER_CONNECTION_STRING = "jdbc:postgresql://localhost:5432/infoenergo_mobile_core_flashback";
+    private static final String DATABASE_SERVER_USER = "postgres";
+    private static final String DATABASE_SERVER_PASSWORD = "kl0pik";
+    
+        static Connection getConnection() throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        Class.forName("org.postgresql.Driver");
+        con = DriverManager.getConnection(DATABASE_SERVER_CONNECTION_STRING, DATABASE_SERVER_USER, DATABASE_SERVER_PASSWORD);
+        con.setAutoCommit(false);
+        return con;
+    }
+        
+        
 }
