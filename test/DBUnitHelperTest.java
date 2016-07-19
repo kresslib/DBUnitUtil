@@ -173,53 +173,15 @@ public class DBUnitHelperTest {
 
     }
 
-    private static final String DATABASE_SERVER_CONNECTION_STRING = "jdbc:postgresql://localhost:5432/infoenergo_mobile_core_flashback";
-    private static final String DATABASE_SERVER_USER = "postgres";
-    private static final String DATABASE_SERVER_PASSWORD = "kl0pik";
-
-    static Connection getConnection() throws ClassNotFoundException, SQLException {
-        Connection con = null;
-        Class.forName("org.postgresql.Driver");
-        con = DriverManager.getConnection(DATABASE_SERVER_CONNECTION_STRING, DATABASE_SERVER_USER, DATABASE_SERVER_PASSWORD);
-        con.setAutoCommit(false);
-        return con;
-    }
-    
-        /**
-     * Test of tablesDrop method, of class DBUnitHelper.
+    /**
+     * Test of getTableDropScript method, of class DBUnitHelper.
      */
     @Test
-    public void testTablesDrop() {
-        System.out.println("tablesDrop");
-        Connection con = null;
-        try {
-            con = getConnection();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String[] tables = new String[]{"devices_stack", "temp_devices_stack", "upload_db", "user_device_reg", "user_reg"};
-        Statement st = null;
-        try {
-            st = con.createStatement();
-        } catch (SQLException ex) {
-            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String sql = "SELECT count(*) hastriggers FROM pg_tables where schemaname = 'public' ";
-        DBClear.tablesDrop(con, tables);
-        try {
-            for (String s_tablename : tables) {
-                ResultSet rs = st.executeQuery(sql + "and tablename = '" + s_tablename + "'");
-                while (rs.next()) {
-                    assertFalse((rs.getInt(1) != 0));
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+    public void testGetTableDropScript() {
+        System.out.println("getTableDropScript");
+        String tableName = "devices_stack";
+        String expResult = "DROP TABLE devices_stack;";
+        String result = DBUnitHelper.getTableDropScript(tableName);
+        assertEquals(expResult, result);
     }
-
-
 }

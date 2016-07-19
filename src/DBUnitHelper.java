@@ -17,9 +17,7 @@ import java.util.regex.Pattern;
  */
 public class DBUnitHelper {
 
-    public static void tablesDrop(Connection con, String[] tables) {
 
-    }
 
     public static String[] getTables(String createAllTablesScript) {
 
@@ -44,6 +42,12 @@ public class DBUnitHelper {
 
         }
         return tbl_names.toArray(new String[0]);
+    }
+    
+    public static String getTableDropScript(String tableName)
+    {
+        String result = "DROP TABLE "+ tableName+";";
+        return result;
     }
 
 }
