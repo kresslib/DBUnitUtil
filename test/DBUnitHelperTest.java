@@ -57,6 +57,7 @@ public class DBUnitHelperTest {
     @Test
     public void testGetTables() {
         System.out.println("getTables");
+        //test
         String createAllTablesScript = "CREATE TABLE devices_stack\n"
                 + "(\n"
                 + "  hash character varying(4000) NOT NULL,\n"
