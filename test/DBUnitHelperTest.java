@@ -6,8 +6,13 @@
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static junit.framework.Assert.assertFalse;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,18 +45,6 @@ public class DBUnitHelperTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of tablesDrop method, of class DBUnitHelper.
-     */
-    @Test
-    public void testTablesDrop() {
-        System.out.println("tablesDrop");
-        Connection con = null;
-        String[] tables = null;
-        DBUnitHelper.tablesDrop(con, tables);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getTables method, of class DBUnitHelper.
@@ -114,7 +107,7 @@ public class DBUnitHelperTest {
         String s_tables_real = Arrays.toString(tables_real);
         assertTrue(s_tables_exp.equalsIgnoreCase(s_tables_real));
     }
-    
+
     /**
      * Test of getTables method, of class DBUnitHelper.
      */
@@ -179,18 +172,54 @@ public class DBUnitHelperTest {
         assertTrue(s_tables_exp.equalsIgnoreCase(s_tables_real));
 
     }
-    
+
     private static final String DATABASE_SERVER_CONNECTION_STRING = "jdbc:postgresql://localhost:5432/infoenergo_mobile_core_flashback";
     private static final String DATABASE_SERVER_USER = "postgres";
     private static final String DATABASE_SERVER_PASSWORD = "kl0pik";
-    
-        static Connection getConnection() throws ClassNotFoundException, SQLException {
+
+    static Connection getConnection() throws ClassNotFoundException, SQLException {
         Connection con = null;
         Class.forName("org.postgresql.Driver");
         con = DriverManager.getConnection(DATABASE_SERVER_CONNECTION_STRING, DATABASE_SERVER_USER, DATABASE_SERVER_PASSWORD);
         con.setAutoCommit(false);
         return con;
     }
-        
-        
+    
+        /**
+     * Test of tablesDrop method, of class DBUnitHelper.
+     */
+    @Test
+    public void testTablesDrop() {
+        System.out.println("tablesDrop");
+        Connection con = null;
+        try {
+            con = getConnection();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String[] tables = new String[]{"devices_stack", "temp_devices_stack", "upload_db", "user_device_reg", "user_reg"};
+        Statement st = null;
+        try {
+            st = con.createStatement();
+        } catch (SQLException ex) {
+            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String sql = "SELECT count(*) hastriggers FROM pg_tables where schemaname = 'public' ";
+        DBClear.tablesDrop(con, tables);
+        try {
+            for (String s_tablename : tables) {
+                ResultSet rs = st.executeQuery(sql + "and tablename = '" + s_tablename + "'");
+                while (rs.next()) {
+                    assertFalse((rs.getInt(1) != 0));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBClearTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+
 }
